@@ -1,0 +1,31 @@
+{
+  "name": "dsh-memory-preset",
+  "version": "1.0.0",
+  "description": "记忆优先预设：只保留最近 1 轮原文，更早的历史从记忆库检索，工具集只做减法",
+  "files": [
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "compatibility": {
+      "dshReleases": {
+        "0.2.2-rc.1": "compatible"
+      }
+    }
+  },
+  "license": "MIT",
+  "author": {
+    "name": "温凌微 (Vera)"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wuming1101/dsh-memory-preset.git"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

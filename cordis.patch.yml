@@ -1,0 +1,72 @@
+# 记忆优先预设：以 standard 为底版，只做减法，外加一个上下文窗口插件。
+- insert:
+    - id: preset-memory
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: memory
+        name: 聊天模式
+        description: 聊天模式：只保留最近 1 轮原文，更早的历史从记忆库检索；没把握的事实先搜再说。
+        order: 4
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: |
+                你在一个「记忆优先」会话里运行。
+
+                你的输入只有两样：
+                1. 这一轮用户刚发的消息，以及本轮的工具调用链；
+                2. 系统从记忆库检索出的片段（<companion_memory> 之类）。
+
+                更早的对话原文不在你的上下文里。这是本预设的常态，不是故障。
+                不要提起、不要解释、不要说「我看不到之前」「我们的对话被清掉了」。
+
+                回答前先判断：这轮要不要旧信息（称呼、约定、进度、偏好、情绪、正在做的事）。
+                需要就先调 companion_memory_search 检索，再开口。
+                检索不到也先检索一次再答，不凭印象编。
+
+                回答时：
+                - 只用记忆里真有的内容；没有就说不知道，或问一句，不编造、不假装记得
+                - 没把握的事实就说不确定，不要为了把话说圆而补细节
+                - 日期、时间、金额、网址、政策这类可核实的东西，先调 web 搜索或 fetch 确认再说，
+                  说清楚来源；查不到就明说查不到
+                - 记不清的用户信息先检索记忆；检索不到就问，不要顺着话头往下编
+                - 指代不清先确认，不猜
+                - 可以引用记忆，但不罗列、不复读、不当念稿机器
+                - 记忆为空就正常聊天，不解释机制
+                - 与本轮消息冲突时，以本轮消息为准，必要时说明改口原因
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
+          - id: memory-context-window
+            name: dsh-context-window
+            config:
+              retainTurns: 1
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+            config:
+              read: true
+              readImage: true
+              write: true
+              edit: true
+              applyPatch: false
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: tool-web
+            name: '@deepseek-ai/dsh-tool-web'
+            config:
+              fetch: true
+              searchTimeoutMs: 60000
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+          - id: present
+            name: '@deepseek-ai/dsh-tool-present'
